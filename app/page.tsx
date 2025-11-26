@@ -1,103 +1,323 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState } from "react";
+import { 
+  Wrench, 
+  Circle, 
+  Hammer, 
+  Settings, 
+  TrendingUp, 
+  Package, 
+  Briefcase,
+  Truck,
+  AlertTriangle,
+  Plus,
+  Minus,
+  Trash2,
+  ShoppingCart,
+  Info
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
+interface Service {
+  id: string;
+  name: string;
+  price: number;
+  icon: any;
+  category: string;
+}
+
+interface CartItem extends Service {
+  quantity: number;
+}
+
+export default function BlackoutsMecanica() {
+  const [cart, setCart] = useState<CartItem[]>([]);
+
+  const services: Service[] = [
+    { id: "kit", name: "Kit", price: 550, icon: Package, category: "ferramentas" },
+    { id: "pneu", name: "Pneu", price: 275, icon: Circle, category: "peças" },
+    { id: "pe-cabra", name: "Pé de Cabra", price: 975, icon: Hammer, category: "ferramentas" },
+    { id: "chave-inglesa", name: "Chave Inglesa", price: 975, icon: Settings, category: "ferramentas" },
+    { id: "elevador", name: "Elevador Hidráulico", price: 975, icon: TrendingUp, category: "ferramentas" },
+    { id: "kit-freio", name: "Kit de Reposição de Freio", price: 550, icon: AlertTriangle, category: "peças" },
+    { id: "bolsa", name: "Bolsa Mecânica", price: 18000, icon: Briefcase, category: "ferramentas" },
+    { id: "guincho", name: "Guincho Portátil", price: 8000, icon: Truck, category: "ferramentas" },
+    { id: "kit-vidros", name: "Kit de Vidros", price: 600, icon: Package, category: "peças" },
+    { id: "reparo-peca", name: "Reparo de Peça", price: 150, icon: Wrench, category: "serviços" },
+  ];
+
+  const addToCart = (service: Service) => {
+    const existingItem = cart.find(item => item.id === service.id);
+    if (existingItem) {
+      setCart(cart.map(item => 
+        item.id === service.id 
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      ));
+    } else {
+      setCart([...cart, { ...service, quantity: 1 }]);
+    }
+  };
+
+  const removeFromCart = (id: string) => {
+    setCart(cart.filter(item => item.id !== id));
+  };
+
+  const updateQuantity = (id: string, change: number) => {
+    setCart(cart.map(item => {
+      if (item.id === id) {
+        const newQuantity = Math.max(1, item.quantity + change);
+        return { ...item, quantity: newQuantity };
+      }
+      return item;
+    }).filter(item => item.quantity > 0));
+  };
+
+  const calculateTotal = () => {
+    return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  };
+
+  const getCategoryVariant = (category: string): "default" | "secondary" | "outline" => {
+    switch(category) {
+      case "ferramentas": return "default";
+      case "peças": return "secondary";
+      case "serviços": return "outline";
+      default: return "outline";
+    }
+  };
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-background">
+      <div className="border-b">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary">
+              <Wrench className="h-6 w-6 text-primary-foreground" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">Blackouts Mecânica</h1>
+              <p className="text-sm text-muted-foreground">Calculadora de Serviços</p>
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+
+      <div className="container mx-auto px-4 py-6">
+        <div className="mb-6 space-y-3">
+          <Alert variant="destructive">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Aviso Importante</AlertTitle>
+            <AlertDescription>
+              É PROIBIDO A REVENDA DE KIT VIDROS. Compras devem ser feitas diretamente na bancada pública.
+            </AlertDescription>
+          </Alert>
+          
+          <Alert>
+            <Info className="h-4 w-4" />
+            <AlertDescription>
+              É permitido pedir gorjetas e dar descontos esporadicamente. Os valores da tabela não podem ser alterados.
+            </AlertDescription>
+          </Alert>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-3">
+          <div className="lg:col-span-2 space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Serviços Disponíveis</CardTitle>
+                <CardDescription>
+                  Clique em um item para adicionar ao orçamento
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {services.map((service) => {
+                    const Icon = service.icon;
+                    const inCart = cart.find(item => item.id === service.id);
+                    
+                    return (
+                      <Button
+                        key={service.id}
+                        variant="outline"
+                        className="h-auto w-full justify-start p-4 hover:bg-accent"
+                        onClick={() => addToCart(service)}
+                      >
+                        <div className="flex w-full items-start gap-3">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary/10">
+                            <Icon className="h-5 w-5 text-primary" />
+                          </div>
+                          <div className="flex-1 text-left">
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="space-y-1">
+                                <p className="font-semibold leading-none">{service.name}</p>
+                                <Badge variant={getCategoryVariant(service.category)} className="text-xs">
+                                  {service.category}
+                                </Badge>
+                              </div>
+                              {inCart && (
+                                <Badge variant="secondary" className="shrink-0">
+                                  {inCart.quantity}x
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="mt-2 text-lg font-bold text-primary">
+                              R$ {service.price.toLocaleString('pt-BR')}
+                            </p>
+                          </div>
+                        </div>
+                      </Button>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Truck className="h-5 w-5" />
+                  Atendimentos Externos
+                </CardTitle>
+                <CardDescription>
+                  Valores adicionais para chamados fora da oficina
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-center justify-between rounded-lg border p-3">
+                  <span className="text-sm font-medium">Chamado Externo</span>
+                  <span className="font-semibold">R$ 1.500 + serviços</span>
+                </div>
+                <div className="flex items-center justify-between rounded-lg border p-3">
+                  <span className="text-sm font-medium">Veículos Explodidos/Naufragados</span>
+                  <span className="font-semibold">R$ 1.500 + serviços</span>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  * O valor pode variar conforme a distância do chamado
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="lg:col-span-1">
+            <Card className="sticky top-4">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <ShoppingCart className="h-5 w-5" />
+                  Orçamento
+                </CardTitle>
+                <CardDescription>
+                  {cart.length} {cart.length === 1 ? 'item selecionado' : 'itens selecionados'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {cart.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <div className="rounded-full bg-muted p-4 mb-4">
+                      <ShoppingCart className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Nenhum item selecionado
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="space-y-3">
+                      {cart.map((item) => {
+                        const Icon = item.icon;
+                        return (
+                          <div 
+                            key={item.id}
+                            className="rounded-lg border p-3 space-y-3"
+                          >
+                            <div className="flex items-start gap-2">
+                              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-primary/10">
+                                <Icon className="h-4 w-4 text-primary" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-sm leading-none truncate">{item.name}</p>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                  R$ {item.price.toLocaleString('pt-BR')}
+                                </p>
+                              </div>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 shrink-0"
+                                onClick={() => removeFromCart(item.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                            
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  size="icon"
+                                  variant="outline"
+                                  className="h-8 w-8"
+                                  onClick={() => updateQuantity(item.id, -1)}
+                                  disabled={item.quantity <= 1}
+                                >
+                                  <Minus className="h-3 w-3" />
+                                </Button>
+                                <span className="w-8 text-center font-semibold tabular-nums">
+                                  {item.quantity}
+                                </span>
+                                <Button
+                                  size="icon"
+                                  variant="outline"
+                                  className="h-8 w-8"
+                                  onClick={() => updateQuantity(item.id, 1)}
+                                >
+                                  <Plus className="h-3 w-3" />
+                                </Button>
+                              </div>
+                              <span className="font-bold tabular-nums">
+                                R$ {(item.price * item.quantity).toLocaleString('pt-BR')}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <Separator />
+
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">Subtotal</span>
+                        <span className="font-semibold tabular-nums">
+                          R$ {calculateTotal().toLocaleString('pt-BR')}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-lg font-semibold">Total</span>
+                        <span className="text-2xl font-bold tabular-nums">
+                          R$ {calculateTotal().toLocaleString('pt-BR')}
+                        </span>
+                      </div>
+                    </div>
+
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={() => setCart([])}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Limpar Orçamento
+                    </Button>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
