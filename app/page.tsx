@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { 
-  Wrench, 
-  Circle, 
-  Hammer, 
-  Settings, 
-  TrendingUp, 
-  Package, 
+import {
+  Wrench,
+  Circle,
+  Hammer,
+  Settings,
+  TrendingUp,
+  Package,
   Briefcase,
   Truck,
   AlertTriangle,
@@ -15,7 +15,9 @@ import {
   Minus,
   Trash2,
   ShoppingCart,
-  Info
+  Info,
+  Check,
+  LucideIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,7 +29,7 @@ interface Service {
   id: string;
   name: string;
   price: number;
-  icon: any;
+  icon: LucideIcon;
   category: string;
 }
 
@@ -92,34 +94,49 @@ export default function BlackoutsMecanica() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="border-b">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary">
-              <Wrench className="h-6 w-6 text-primary-foreground" />
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
+      <div className="border-b bg-card/50 backdrop-blur-sm shadow-sm sticky top-0 z-10">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full" />
+                <div className="relative flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-lg">
+                  <Wrench className="h-7 w-7 text-primary-foreground" />
+                </div>
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                  Blackouts Mecânica
+                </h1>
+                <p className="text-sm text-muted-foreground font-medium">Calculadora de Serviços</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight">Blackouts Mecânica</h1>
-              <p className="text-sm text-muted-foreground">Calculadora de Serviços</p>
-            </div>
+            {cart.length > 0 && (
+              <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10 border border-primary/20">
+                <ShoppingCart className="h-4 w-4 text-primary" />
+                <span className="text-sm font-semibold text-primary">
+                  {cart.length} {cart.length === 1 ? 'item' : 'itens'}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-6">
-        <div className="mb-6 space-y-3">
-          <Alert variant="destructive">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertTitle>Aviso Importante</AlertTitle>
-            <AlertDescription>
+      <div className="container mx-auto px-4 py-6 space-y-6">
+        <div className="grid gap-3 md:grid-cols-2">
+          <Alert variant="destructive" className="border-destructive/50 bg-destructive/5">
+            <AlertTriangle className="h-5 w-5" />
+            <AlertTitle className="font-bold">Aviso Importante</AlertTitle>
+            <AlertDescription className="text-sm">
               É PROIBIDO A REVENDA DE KIT VIDROS. Compras devem ser feitas diretamente na bancada pública.
             </AlertDescription>
           </Alert>
-          
-          <Alert>
-            <Info className="h-4 w-4" />
-            <AlertDescription>
+
+          <Alert className="border-primary/30 bg-primary/5">
+            <Info className="h-5 w-5 text-primary" />
+            <AlertDescription className="text-sm font-medium">
               É permitido pedir gorjetas e dar descontos esporadicamente. Os valores da tabela não podem ser alterados.
             </AlertDescription>
           </Alert>
@@ -127,60 +144,73 @@ export default function BlackoutsMecanica() {
 
         <div className="grid gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2 space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Serviços Disponíveis</CardTitle>
-                <CardDescription>
-                  Clique em um item para adicionar ao orçamento
-                </CardDescription>
+            <Card className="border-border/50 shadow-lg">
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-xl">Serviços Disponíveis</CardTitle>
+                    <CardDescription className="mt-1">
+                      Clique em um item para adicionar ao orçamento
+                    </CardDescription>
+                  </div>
+                  <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary text-xs font-semibold">
+                    {services.length} serviços
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {services.map((service) => {
                     const Icon = service.icon;
                     const inCart = cart.find(item => item.id === service.id);
-                    
+
                     return (
-                      <Button
+                      <button
                         key={service.id}
-                        variant="outline"
-                        className="h-auto w-full justify-start p-4 hover:bg-accent"
+                        className="group relative h-auto w-full text-left p-4 rounded-lg border border-border/50 bg-card hover:border-primary/50 hover:bg-accent/50 hover:shadow-md transition-all duration-200 active:scale-[0.98]"
                         onClick={() => addToCart(service)}
                       >
                         <div className="flex w-full items-start gap-3">
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary/10">
+                          <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 group-hover:from-primary/30 group-hover:to-primary/20 transition-colors">
                             <Icon className="h-5 w-5 text-primary" />
-                          </div>
-                          <div className="flex-1 text-left">
-                            <div className="flex items-start justify-between gap-2">
-                              <div className="space-y-1">
-                                <p className="font-semibold leading-none">{service.name}</p>
-                                <Badge variant={getCategoryVariant(service.category)} className="text-xs">
-                                  {service.category}
-                                </Badge>
+                            {inCart && (
+                              <div className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground shadow-sm">
+                                <Check className="h-3 w-3" />
                               </div>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-2 mb-1.5">
+                              <p className="font-semibold text-sm leading-tight text-foreground group-hover:text-primary transition-colors">
+                                {service.name}
+                              </p>
                               {inCart && (
-                                <Badge variant="secondary" className="shrink-0">
+                                <Badge variant="secondary" className="shrink-0 h-5 px-2 text-xs font-bold">
                                   {inCart.quantity}x
                                 </Badge>
                               )}
                             </div>
-                            <p className="mt-2 text-lg font-bold text-primary">
+                            <Badge variant={getCategoryVariant(service.category)} className="text-xs mb-2">
+                              {service.category}
+                            </Badge>
+                            <p className="text-base font-bold text-primary">
                               R$ {service.price.toLocaleString('pt-BR')}
                             </p>
                           </div>
                         </div>
-                      </Button>
+                      </button>
                     );
                   })}
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Truck className="h-5 w-5" />
+            <Card className="border-border/50 shadow-lg">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10">
+                    <Truck className="h-5 w-5 text-primary" />
+                  </div>
                   Atendimentos Externos
                 </CardTitle>
                 <CardDescription>
@@ -188,124 +218,149 @@ export default function BlackoutsMecanica() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="flex items-center justify-between rounded-lg border p-3">
-                  <span className="text-sm font-medium">Chamado Externo</span>
-                  <span className="font-semibold">R$ 1.500 + serviços</span>
+                <div className="group flex items-center justify-between rounded-lg border border-border/50 bg-accent/30 p-3.5 hover:border-primary/30 hover:bg-accent/50 transition-all">
+                  <span className="text-sm font-semibold">Chamado Externo</span>
+                  <span className="font-bold text-primary">R$ 1.500 + serviços</span>
                 </div>
-                <div className="flex items-center justify-between rounded-lg border p-3">
-                  <span className="text-sm font-medium">Veículos Explodidos/Naufragados</span>
-                  <span className="font-semibold">R$ 1.500 + serviços</span>
+                <div className="group flex items-center justify-between rounded-lg border border-border/50 bg-accent/30 p-3.5 hover:border-primary/30 hover:bg-accent/50 transition-all">
+                  <span className="text-sm font-semibold">Veículos Explodidos/Naufragados</span>
+                  <span className="font-bold text-primary">R$ 1.500 + serviços</span>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  * O valor pode variar conforme a distância do chamado
-                </p>
+                <div className="flex items-start gap-2 rounded-lg bg-muted/50 p-3">
+                  <Info className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    O valor pode variar conforme a distância do chamado
+                  </p>
+                </div>
               </CardContent>
             </Card>
           </div>
 
           <div className="lg:col-span-1">
-            <Card className="sticky top-4">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <ShoppingCart className="h-5 w-5" />
+            <Card className="sticky top-24 border-border/50 shadow-xl">
+              <CardHeader className="pb-4 bg-gradient-to-br from-primary/5 to-transparent">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/80">
+                    <ShoppingCart className="h-5 w-5 text-primary-foreground" />
+                  </div>
                   Orçamento
                 </CardTitle>
-                <CardDescription>
-                  {cart.length} {cart.length === 1 ? 'item selecionado' : 'itens selecionados'}
+                <CardDescription className="flex items-center gap-2">
+                  <span className="text-sm font-medium">
+                    {cart.length} {cart.length === 1 ? 'item selecionado' : 'itens selecionados'}
+                  </span>
+                  {cart.length > 0 && (
+                    <Badge variant="secondary" className="text-xs">
+                      Ativo
+                    </Badge>
+                  )}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {cart.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-12 text-center">
-                    <div className="rounded-full bg-muted p-4 mb-4">
-                      <ShoppingCart className="h-8 w-8 text-muted-foreground" />
+                  <div className="flex flex-col items-center justify-center py-16 text-center">
+                    <div className="relative mb-4">
+                      <div className="absolute inset-0 bg-primary/10 blur-2xl rounded-full" />
+                      <div className="relative rounded-full bg-gradient-to-br from-muted to-muted/50 p-6">
+                        <ShoppingCart className="h-10 w-10 text-muted-foreground" />
+                      </div>
                     </div>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm font-medium text-muted-foreground mb-1">
                       Nenhum item selecionado
+                    </p>
+                    <p className="text-xs text-muted-foreground/70">
+                      Adicione serviços ao orçamento
                     </p>
                   </div>
                 ) : (
                   <>
-                    <div className="space-y-3">
+                    <div className="space-y-2.5 max-h-[400px] overflow-y-auto pr-1">
                       {cart.map((item) => {
                         const Icon = item.icon;
                         return (
-                          <div 
+                          <div
                             key={item.id}
-                            className="rounded-lg border p-3 space-y-3"
+                            className="group rounded-lg border border-border/50 bg-card hover:border-primary/30 hover:shadow-md p-3 space-y-3 transition-all"
                           >
-                            <div className="flex items-start gap-2">
-                              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-primary/10">
+                            <div className="flex items-start gap-2.5">
+                              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/10">
                                 <Icon className="h-4 w-4 text-primary" />
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="font-medium text-sm leading-none truncate">{item.name}</p>
-                                <p className="text-sm text-muted-foreground mt-1">
-                                  R$ {item.price.toLocaleString('pt-BR')}
+                                <p className="font-semibold text-sm leading-tight truncate">{item.name}</p>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  R$ {item.price.toLocaleString('pt-BR')} / unid
                                 </p>
                               </div>
                               <Button
                                 size="icon"
                                 variant="ghost"
-                                className="h-8 w-8 shrink-0"
+                                className="h-8 w-8 shrink-0 hover:bg-destructive/10 hover:text-destructive"
                                 onClick={() => removeFromCart(item.id)}
                               >
-                                <Trash2 className="h-4 w-4" />
+                                <Trash2 className="h-3.5 w-3.5" />
                               </Button>
                             </div>
-                            
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-2">
+
+                            <div className="flex items-center justify-between pt-1">
+                              <div className="flex items-center gap-1.5">
                                 <Button
                                   size="icon"
                                   variant="outline"
-                                  className="h-8 w-8"
+                                  className="h-7 w-7 rounded-md"
                                   onClick={() => updateQuantity(item.id, -1)}
                                   disabled={item.quantity <= 1}
                                 >
                                   <Minus className="h-3 w-3" />
                                 </Button>
-                                <span className="w-8 text-center font-semibold tabular-nums">
-                                  {item.quantity}
-                                </span>
+                                <div className="flex items-center justify-center min-w-[2.5rem] h-7 px-2 rounded-md bg-primary/10 border border-primary/20">
+                                  <span className="text-sm font-bold text-primary tabular-nums">
+                                    {item.quantity}
+                                  </span>
+                                </div>
                                 <Button
                                   size="icon"
                                   variant="outline"
-                                  className="h-8 w-8"
+                                  className="h-7 w-7 rounded-md"
                                   onClick={() => updateQuantity(item.id, 1)}
                                 >
                                   <Plus className="h-3 w-3" />
                                 </Button>
                               </div>
-                              <span className="font-bold tabular-nums">
-                                R$ {(item.price * item.quantity).toLocaleString('pt-BR')}
-                              </span>
+                              <div className="text-right">
+                                <p className="text-xs text-muted-foreground">Total</p>
+                                <p className="text-base font-bold text-primary tabular-nums">
+                                  R$ {(item.price * item.quantity).toLocaleString('pt-BR')}
+                                </p>
+                              </div>
                             </div>
                           </div>
                         );
                       })}
                     </div>
 
-                    <Separator />
+                    <Separator className="my-4" />
 
-                    <div className="space-y-2">
+                    <div className="space-y-3 pt-2">
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Subtotal</span>
+                        <span className="text-muted-foreground font-medium">Subtotal</span>
                         <span className="font-semibold tabular-nums">
                           R$ {calculateTotal().toLocaleString('pt-BR')}
                         </span>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-lg font-semibold">Total</span>
-                        <span className="text-2xl font-bold tabular-nums">
-                          R$ {calculateTotal().toLocaleString('pt-BR')}
-                        </span>
+                      <div className="flex items-center justify-between p-4 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
+                        <div>
+                          <p className="text-xs text-muted-foreground font-medium mb-0.5">Total do Orçamento</p>
+                          <p className="text-2xl font-bold text-primary tabular-nums">
+                            R$ {calculateTotal().toLocaleString('pt-BR')}
+                          </p>
+                        </div>
                       </div>
                     </div>
 
-                    <Button 
-                      variant="outline" 
-                      className="w-full"
+                    <Button
+                      variant="outline"
+                      className="w-full mt-4 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30"
                       onClick={() => setCart([])}
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
